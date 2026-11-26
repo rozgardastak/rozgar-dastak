@@ -9,6 +9,8 @@ let activeCategory = 'All';
 const list = document.getElementById('jobList');
 const count = document.getElementById('listingCount');
 document.getElementById('year').textContent = new Date().getFullYear();
+const initialQuery = new URLSearchParams(window.location.search).get('q');
+if (initialQuery) document.getElementById('searchInput').value = initialQuery;
 
 function escapeHTML(value = '') {
   return String(value).replace(/[&<>"']/g, c => ({
