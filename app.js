@@ -28,6 +28,21 @@ function formatDate(value) {
   const d = new Date(value + 'T00:00:00');
   return Number.isNaN(d.getTime()) ? value : d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
 }
+function formatRequirementDetails(raw) {
+  let text = String(raw || '').replace(/\\r/g, '').trim();
+  if (!text) return '';
+  // When an ad was saved as one long line, put common labelled requirements on separate lines.
+  const labels = ['Education','Qualification','Age','Age Limit','Height','Height if required','Experience','Gender','Domicile','Salary','Pay Scale','BPS','Vacancies','No. of Posts','Application Fee','Test Fee','Physical Standard','Physical Test','Running','Typing Speed','Skills','Job Type','Last Date','How to Apply','Application Process','Required Documents'];
+  const pattern = new RegExp('(?<!^)(?<!\\n)\\s+(?=(' + labels.map(x=>x.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\function renderJobs() {')).join('|') + ')\\s*:)', 'gi');
+  text = text.replace(pattern, '\\n');
+  return text.split(/\\n+/).map(line => {
+    const clean = line.trim().replace(/^[-•▪●]+\\s*/, '');
+    if (!clean) return '';
+    const match = clean.match(/^([^:]{2,55}):\\s*(.*)$/);
+    if (match) return '<div class="requirement-row"><strong>' + escapeHTML(match[1].trim()) + '</strong><span>' + escapeHTML(match[2].trim()) + '</span></div>';
+    return '<p class="requirement-note">' + escapeHTML(clean) + '</p>';
+  }).join('');
+}
 function renderJobs() {
   const term = document.getElementById('searchInput').value.trim().toLowerCase();
   const location = document.getElementById('locationFilter').value.toLowerCase();
@@ -66,7 +81,7 @@ function renderJobs() {
           <span><b>Qualification</b><em title="${escapeHTML(qualification)}">${escapeHTML(qualification)}</em></span>
           <span><b>Last date</b>${escapeHTML(formatDate(job.last_date))}</span>
         </div>
-        ${description ? `<details class="job-details"><summary>View job details</summary><p>${escapeHTML(description)}</p></details>` : ''}
+        ${description ? `<details class="job-details"><summary>View job details</summary><div class="requirement-list">${formatRequirementDetails(description)}</div></details>` : ''}
       </div>
       <div class="job-action">${apply}</div>
     </article>`;
