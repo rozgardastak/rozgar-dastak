@@ -196,3 +196,17 @@ footer{background:#f7f9fb}
 .search-wrap form{border-top-color:#35a879}
 .about-band{background:linear-gradient(115deg,#18352d,#285b49);border-bottom-color:#35a879}
 .category-grid>a:hover{border-color:#8cc9aa}
+
+/* Force the green brand across homepage, including older/blue rules */
+:root{--navy:#18352d!important;--blue:#176b55!important;--blue2:#105441!important;--orange:#35a879!important;--ink:#18352d!important;--muted:#66776f!important;--paper:#f6faf7!important;--line:#dce8df!important}
+.top-strip{background:#102b23!important}.site-header{border-bottom-color:#35a879!important}
+.brand,.brand b,.site-header nav a:hover{color:#176b55!important}.brand-mark{background:#176b55!important;border-bottom-color:#35a879!important}
+.header-cta,.primary-btn,.hero .primary-btn,.apply-btn{background:#35a879!important;color:#102b23!important}
+.header-cta span,.primary-btn span,.hero .primary-btn span{color:#102b23!important}
+.hero{background:linear-gradient(115deg,#18352d 0%,#214638 62%,#285b49 100%)!important}
+.hero-copy h1 em{color:#8bd8b4!important}.hero .eyebrow,.about-band .eyebrow,.about-band h2 em{color:#d8f2e5!important}
+.eyebrow>span,.top-live{background:#35a879!important;box-shadow:0 0 0 4px #35a87922!important}
+.art-card,.about-band{border-bottom-color:#35a879!important}.art-icon,.live-dot,.cat-icon{color:#176b55!important}
+.search-wrap form{border-top-color:#35a879!important}.category-grid>a:hover{border-color:#8cc9aa!important}
+.job-card{border-left-color:#176b55!important}.pill.active,.pill:hover{background:#18352d!important;border-color:#18352d!important}
+footer{background:#f6faf7!important}
