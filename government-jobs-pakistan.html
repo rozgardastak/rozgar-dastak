@@ -86,9 +86,16 @@ function matchesDept(job,name){if(name==='All')return true;const hay=[job.title,
 function isGov(job){const t=String(job.job_type||'').toLowerCase();return t.includes('government')||t.includes('federal')||t.includes('public sector')||t.includes('govt');}
 function renderCards(){ $('deptGrid').innerHTML=departments.map(([name])=>{const n=jobs.filter(j=>isGov(j)&&matchesDept(j,name)&&!expired(j)).length;return '<button class="dept '+(selected===name?'active':'')+'" data-dept="'+esc(name)+'"><b>'+esc(name)+'</b><small>Active vacancies in this section</small><span class="num">'+n+' active job'+(n===1?'':'s')+'</span></button>';}).join('');document.querySelectorAll('[data-dept]').forEach(b=>b.addEventListener('click',()=>{selected=b.dataset.dept;$('listTitle').textContent=selected==='All'?'All Government Jobs':selected+' Jobs';renderCards();renderJobs();$('all-jobs').scrollIntoView({behavior:'smooth'});}));}
 function formatRequirements(raw){
- const labels=['Education','Qualification','Age','Age Limit','Height','Height if required','Experience','Gender','Domicile','Salary','Pay Scale','BPS','Vacancies','No. of Posts','Application Fee','Test Fee','Physical Standard','Physical Test','Running','Typing Speed','Skills','Job Type','Last Date','How to Apply','Application Process','Required Documents'];
- let text=String(raw||'').replace(/\\r/g,'').trim();
- const escaped=labels.map(x=>x.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\function expired(j){')).join('|');
+ const labels=['Height if required','Application Process','Required Documents','Physical Standard','Physical Test','Application Fee','How to Apply','Typing Speed','No. of Posts','Qualification','Experience','Education','Age Limit','Domicile','Gender','Salary','Pay Scale','Vacancies','Last Date','Job Type','Test Fee','Running','Height','Age','BPS','Skills'];
+ let text=String(raw||'').replace(/\r/g,'').trim();
+ text=text.replace(new RegExp('\\s+(?=('+labels.join('|')+')\\s*:)','gi'),'\n');
+ return text.split(/\n+/).map(line=>{
+  const clean=line.trim().replace(/^[-•▪●]+\s*/,'');if(!clean)return '';
+  const m=clean.match(/^([^:]{2,55}):\s*(.*)$/);
+  return m?'<div class="requirement-row"><strong>'+esc(m[1].trim())+'</strong><span>'+esc(m[2].trim())+'</span></div>':'<p class="requirement-note">'+esc(clean)+'</p>';
+ }).join('');
+}
+function expired(j){')).join('|');
  text=text.replace(new RegExp('(?<!^)(?<!\\n)\\s+(?=('+escaped+')\\s*:)','gi'),'\\n');
  return text.split(/\\n+/).map(line=>{
   const clean=line.trim().replace(/^[-•▪●]+\\s*/,'');if(!clean)return '';
