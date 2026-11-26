@@ -1,7 +1,7 @@
 // Add your Supabase project URL and anon/public key here after deployment setup.
 // Never put a service_role key in a public website.
-const SUPABASE_URL = https://veyshvtjyeioobkchjju.supabase.co
-const SUPABASE_ANON_KEY = sb_publishable_nfGM7PpeTLTJZEaqN7evpA_QDEJNc8u
+const SUPABASE_URL = 'https://veyshvtjyeioobkchjju.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_nfGM7PpeTLTJZEaqN7evpA_QDEJNc8u';
 let allJobs = [];
 let activeCategory = 'All';
 const list = document.getElementById('jobList');
