@@ -28,6 +28,13 @@
 .dept{border-radius:6px;padding:17px}
 .dept b{font-size:15px}
 @media(max-width:760px){.job{padding:16px}.job h3{font-size:17px}.job .meta{font-size:12px;gap:8px 12px}.apply{font-size:12px}}
+
+.requirement-list{display:grid;gap:0;margin-top:10px;border:1px solid #e1e8ee;border-radius:5px;overflow:hidden;background:#fff}
+.requirement-row{display:grid;grid-template-columns:minmax(135px,205px) minmax(0,1fr);gap:14px;padding:11px 14px;border-bottom:1px solid #e8edf2;font-size:14px;line-height:1.6}
+.requirement-row:last-child{border-bottom:0}.requirement-row strong{font-size:13px;font-weight:800;color:#102b46}.requirement-row span{color:#425b70;white-space:pre-line}
+.requirement-note{margin:0;padding:11px 14px;border-bottom:1px solid #e8edf2;color:#425b70;font-size:14px;line-height:1.7;white-space:pre-line}
+.footer-credit{display:flex;flex-direction:column;gap:5px;text-align:right}.footer-credit strong{font-size:14px;color:#102b46;font-weight:800}.footer-credit small{font-size:12px;color:#64798b}
+@media(max-width:760px){.requirement-row{grid-template-columns:1fr;gap:3px;padding:10px 12px}.requirement-row strong{font-size:12px}.requirement-row span,.requirement-note{font-size:13px}.footer-credit{text-align:left}}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"Government Jobs by Department in Pakistan","description":"Browse government vacancies by department and recruitment body in Pakistan.","url":"https://rozgardastak.github.io/rozgar-dastak/government-jobs-pakistan.html","isPartOf":{"@type":"WebSite","name":"Rozgar Dastak","url":"https://rozgardastak.github.io/rozgar-dastak/"}}</script>
 </head>
@@ -63,7 +70,7 @@
 </div></section>
 <section class="panel"><h2>Important</h2><p class="sub">Rozgar Dastak par wohi vacancy active show hogi jo database mein add ki gayi ho. Kisi idare ka card hona is baat ki guarantee nahi ke us waqt vacancy open hai. Apply karne se pehle official ad, eligibility, domicile, fee aur last date check karein.</p></section>
 </main>
-<footer>© 2026 Rozgar Dastak. Verify every vacancy from its official source.</footer>
+<footer><span class="footer-credit"><strong>Founder &amp; CEO: Haroon Rasheed</strong><small>© 2026 Rozgar Dastak. Verify every vacancy from its official source.</small></span></footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL='https://veyshvtjyeioobkchjju.supabase.co';
@@ -78,6 +85,17 @@ function termsFor(name){const d=departments.find(x=>x[0]===name);return d?d[1].s
 function matchesDept(job,name){if(name==='All')return true;const hay=[job.title,job.organization,job.department,job.description,job.job_type].join(' ').toLowerCase();return termsFor(name).some(t=>hay.includes(t));}
 function isGov(job){const t=String(job.job_type||'').toLowerCase();return t.includes('government')||t.includes('federal')||t.includes('public sector')||t.includes('govt');}
 function renderCards(){ $('deptGrid').innerHTML=departments.map(([name])=>{const n=jobs.filter(j=>isGov(j)&&matchesDept(j,name)&&!expired(j)).length;return '<button class="dept '+(selected===name?'active':'')+'" data-dept="'+esc(name)+'"><b>'+esc(name)+'</b><small>Active vacancies in this section</small><span class="num">'+n+' active job'+(n===1?'':'s')+'</span></button>';}).join('');document.querySelectorAll('[data-dept]').forEach(b=>b.addEventListener('click',()=>{selected=b.dataset.dept;$('listTitle').textContent=selected==='All'?'All Government Jobs':selected+' Jobs';renderCards();renderJobs();$('all-jobs').scrollIntoView({behavior:'smooth'});}));}
+function formatRequirements(raw){
+ const labels=['Education','Qualification','Age','Age Limit','Height','Height if required','Experience','Gender','Domicile','Salary','Pay Scale','BPS','Vacancies','No. of Posts','Application Fee','Test Fee','Physical Standard','Physical Test','Running','Typing Speed','Skills','Job Type','Last Date','How to Apply','Application Process','Required Documents'];
+ let text=String(raw||'').replace(/\\r/g,'').trim();
+ const escaped=labels.map(x=>x.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\function expired(j){')).join('|');
+ text=text.replace(new RegExp('(?<!^)(?<!\\n)\\s+(?=('+escaped+')\\s*:)','gi'),'\\n');
+ return text.split(/\\n+/).map(line=>{
+  const clean=line.trim().replace(/^[-•▪●]+\\s*/,'');if(!clean)return '';
+  const m=clean.match(/^([^:]{2,55}):\\s*(.*)$/);
+  return m?'<div class="requirement-row"><strong>'+esc(m[1].trim())+'</strong><span>'+esc(m[2].trim())+'</span></div>':'<p class="requirement-note">'+esc(clean)+'</p>';
+ }).join('');
+}
 function expired(j){return j.last_date&&new Date(j.last_date+'T23:59:59')<new Date(new Date().setHours(0,0,0,0));}
 function renderJobs(){const term=$('jobSearch').value.trim().toLowerCase(),loc=$('provinceFilter').value.toLowerCase();let rows=jobs.filter(j=>isGov(j)&&!expired(j)&&matchesDept(j,selected));rows=rows.filter(j=>{const hay=[j.title,j.organization,j.department,j.location,j.province,j.description].join(' ').toLowerCase();const locationOK=!loc||[j.location,j.province].join(' ').toLowerCase().includes(loc);return (!term||hay.includes(term))&&locationOK;});$('jobCount').textContent=rows.length+' active '+(rows.length===1?'vacancy':'vacancies');if(!rows.length){$('jobList').innerHTML='<div class="empty">'+(selected==='All'?'Filhal database mein koi active government vacancy available nahi.':'Filhal '+esc(selected)+' ki koi active vacancy available nahi. Nayi vacancy add hote hi yahan show hogi.')+'</div>';return;}$('jobList').innerHTML=rows.map(j=>'<article class="job"><div><span class="tag">'+esc(j.job_type||'Government Job')+'</span><h3>'+esc(j.title)+'</h3><div>'+esc(j.organization||'Government Department')+(j.department?' • '+esc(j.department):'')+'</div><div class="meta"><span>Location: '+esc(j.location||j.province||'Pakistan')+'</span><span>Education: '+esc(j.education||'See official advertisement')+'</span><span>Last date: '+esc(j.last_date||'See official ad')+'</span></div>'+(j.description?'<details class="job-details"><summary>View job details</summary><p>'+esc(j.description)+'</p></details>':'')+'</div>'+(j.apply_link&&/^https:\/\//i.test(j.apply_link)?'<a class="apply" href="'+esc(j.apply_link)+'" target="_blank" rel="noopener noreferrer nofollow">Official apply ↗</a>':'<span class="tag">Apply link pending</span>')+'</article>').join('');}
 $('showAll').addEventListener('click',()=>{selected='All';$('jobSearch').value='';$('provinceFilter').value='';$('listTitle').textContent='All Government Jobs';renderCards();renderJobs();});
