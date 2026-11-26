@@ -29,11 +29,21 @@ function formatDate(value) {
   return Number.isNaN(d.getTime()) ? value : d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
 }
 function formatRequirementDetails(raw) {
-  let text = String(raw || '').replace(/\\r/g, '').trim();
+  let text = String(raw || '').replace(/\r/g, '').trim();
   if (!text) return '';
-  // When an ad was saved as one long line, put common labelled requirements on separate lines.
-  const labels = ['Education','Qualification','Age','Age Limit','Height','Height if required','Experience','Gender','Domicile','Salary','Pay Scale','BPS','Vacancies','No. of Posts','Application Fee','Test Fee','Physical Standard','Physical Test','Running','Typing Speed','Skills','Job Type','Last Date','How to Apply','Application Process','Required Documents'];
-  const pattern = new RegExp('(?<!^)(?<!\\n)\\s+(?=(' + labels.map(x=>x.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\function renderJobs() {')).join('|') + ')\\s*:)', 'gi');
+  const labels = ['Height if required','Application Process','Required Documents','Physical Standard','Physical Test','Application Fee','How to Apply','Typing Speed','No. of Posts','Qualification','Experience','Education','Age Limit','Domicile','Gender','Salary','Pay Scale','Vacancies','Last Date','Job Type','Test Fee','Running','Height','Age','BPS','Skills'];
+  const labelPattern = labels.join('|');
+  // Split long single-line descriptions before labelled requirements.
+  text = text.replace(new RegExp('\\s+(?=(' + labelPattern + ')\\s*:)', 'gi'), '\n');
+  return text.split(/\n+/).map(line => {
+    const clean = line.trim().replace(/^[-•▪●]+\s*/, '');
+    if (!clean) return '';
+    const match = clean.match(/^([^:]{2,55}):\s*(.*)$/);
+    if (match) return '<div class="requirement-row"><strong>' + escapeHTML(match[1].trim()) + '</strong><span>' + escapeHTML(match[2].trim()) + '</span></div>';
+    return '<p class="requirement-note">' + escapeHTML(clean) + '</p>';
+  }).join('');
+}
+function renderJobs() {')).join('|') + ')\\s*:)', 'gi');
   text = text.replace(pattern, '\\n');
   return text.split(/\\n+/).map(line => {
     const clean = line.trim().replace(/^[-•▪●]+\\s*/, '');
