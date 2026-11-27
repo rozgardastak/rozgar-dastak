@@ -7,7 +7,7 @@
 <meta name="keywords" content="private jobs Pakistan, latest private jobs, company jobs Pakistan, jobs in Pakistan 2026, Rozgar Dastak">
 <meta name="robots" content="index,follow"><link rel="canonical" href="https://rozgar-dastak.pages.dev/private-jobs-pakistan.html">
 <meta name="theme-color" content="#123c2d">
-<style>
+<style>\n[hidden]{display:none!important}\n
 :root{color-scheme:light;--green:#145c43;--bright:#2b9b69;--pale:#e7f4ed;--ink:#17382c;--muted:#64786d;--line:#dce9e1}
 *{box-sizing:border-box}body{margin:0;background:#f6faf7;color:var(--ink);font:16px/1.6 'DM Sans',Arial,sans-serif}
 header{max-width:1200px;margin:auto;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}.brand{color:var(--green);font-weight:900;text-decoration:none;font-size:23px}nav a{color:var(--green);text-decoration:none;margin-left:18px;font-weight:700}
@@ -29,11 +29,11 @@ footer{max-width:1200px;margin:35px auto;padding:20px 24px;border-top:1px solid 
 <section id="jobsSection" hidden><div class="section-head"><h2 id="listTitle">All active private jobs</h2><p id="listCount"></p></div><div class="search"><input id="search" type="search" placeholder="Job title, company, city ya department search karein…"><button class="btn" id="clear">All companies</button></div><div class="jobs" id="jobs"><div class="empty">Vacancies load ho rahi hain…</div></div></section>
 <div class="note" style="margin-top:25px">Safety: job ke liye advance payment, OTP, password ya bank PIN na dein. Vacancy ki eligibility aur date apply karne se pehle official employer source par confirm kar len.</div>
 </main><footer>© <span id="year"></span> Rozgar Dastak · Pakistan Private Jobs</footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 const SUPABASE_URL='https://veyshvtjyeioobkchjju.supabase.co';
 const SUPABASE_ANON_KEY='sb_publishable_nfGM7PpeTLTJZEaqN7evpA_QDEJNc8u';
-const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+
 let all=[],selectedCompany='All',selectedProvince='Punjab';
 const provinces=['Punjab','Sindh','Khyber Pakhtunkhwa','Balochistan'];
 function inProvince(j,p){const v=String(j.province||'').toLowerCase().trim();if(!v)return false;if(v==='pakistan'||v==='all pakistan')return true;const a={'Punjab':['punjab'],'Sindh':['sindh'],'Khyber Pakhtunkhwa':['khyber pakhtunkhwa','kpk'],'Balochistan':['balochistan','baluchistan']};return a[p].some(x=>v===x||v.split(/[\\/,;|]/).map(y=>y.trim()).includes(x));}
@@ -50,6 +50,6 @@ function renderJobs(){const scoped=provinceRows();const term=search.value.trim()
 document.getElementById('listCount').textContent=rows.length+' vacancies';if(!rows.length){jobs.innerHTML='<div class="empty">Is company/search mein abhi active jobs nahi milin.</div>';return;}
 jobs.innerHTML=rows.map(j=>'<article class="job"><div><div class="company">'+esc(j.organization||'Company')+' · '+esc(j.department||'')+'</div><h3>'+esc(j.title)+'</h3><div class="meta"><span>📍 '+esc(j.location||j.province||'Pakistan')+'</span><span class="deadline">Last date: '+esc(fmt(j.last_date))+'</span><span>Qualification: '+esc(j.education||'See employer details')+'</span></div><p>'+esc(j.description||'Please see employer portal for details.')+'</p></div><a class="btn" href="'+esc(j.apply_link||'#')+'" target="_blank" rel="noopener noreferrer">Apply / Details ↗</a></article>').join('');}
 search.addEventListener('input',renderJobs);document.getElementById('clear').addEventListener('click',()=>{selectedCompany='All';search.value='';renderFolders();renderJobs();document.getElementById('listTitle').textContent=selectedProvince+' private jobs — all companies';});\ndocument.getElementById('changeProvince').addEventListener('click',()=>{document.getElementById('jobsSection').hidden=true;document.getElementById('companySection').hidden=true;document.getElementById('provinceSection').hidden=false;document.getElementById('provinceSection').scrollIntoView({behavior:'smooth',block:'start'});});
-(async()=>{try{const {data,error}=await client.from('jobs').select('id,title,organization,department,job_type,location,province,education,last_date,apply_link,description,is_active,created_at').eq('is_active',true).eq('job_type','Private').order('last_date',{ascending:true}).limit(1000);if(error)throw error;all=(data||[]).filter(j=>!j.last_date||new Date(j.last_date+'T23:59:59')>=new Date());document.getElementById('total').textContent=all.length+' active vacancies';renderProvinces();renderFolders();renderJobs();}catch(e){document.getElementById('total').textContent='Jobs temporarily unavailable';folders.innerHTML='<div class="empty">Private jobs load nahi ho sakin. Thori dair baad refresh karein.</div>';jobs.innerHTML='';console.error(e);}})();
+(async()=>{try{const cols='id,title,organization,department,job_type,location,province,education,last_date,apply_link,description,is_active,created_at';const url=SUPABASE_URL+'/rest/v1/jobs?select='+encodeURIComponent(cols)+'&is_active=eq.true&job_type=eq.Private&order=last_date.asc&limit=1000';const response=await fetch(url,{headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+SUPABASE_ANON_KEY},cache:'no-store'});if(!response.ok)throw new Error('Supabase API '+response.status+' '+(await response.text()).slice(0,200));const data=await response.json();all=(data||[]).filter(j=>!j.last_date||new Date(j.last_date+'T23:59:59')>=new Date());document.getElementById('total').textContent=all.length+' active vacancies';renderProvinces();renderFolders();renderJobs();}catch(e){document.getElementById('total').textContent='Jobs temporarily unavailable';folders.innerHTML='<div class="empty">Private jobs load nahi ho sakin. Thori dair baad refresh karein.</div>';jobs.innerHTML='';console.error(e);}})();
 </script>
 </body></html>
