@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: https://rozgardastak.github.io/rozgar-dastak/sitemap.xml
+
+Sitemap: https://rozgar-dastak.pages.dev/sitemap.xml
