@@ -100,10 +100,9 @@ function renderCards(){ $('deptGrid').innerHTML=departments.map(([name])=>{const
 function formatRequirements(raw){
  const labels=['Height','Application Fee','How to Apply','Typing Speed','Qualification','Experience','Education','Age Limit','Domicile','Gender','Salary','Pay Scale','Vacancies','Last Date','Job Type','Test Fee','BPS','Skills'];
  let text=String(raw||'').replace(/\r/g,'').trim();
- text=text.replace(new RegExp('\\s+(?=('+labels.join('|')+')\\s*:)','gi'),'
-');
- return text.split(/
-+/).map(line=>{
+ const newline=String.fromCharCode(10);
+ text=text.replace(new RegExp('\\s+(?=('+labels.join('|')+')\\s*:)','gi'),newline);
+ return text.split(newline).map(line=>{
   const clean=line.trim().replace(/^[-•▪●]+\s*/,'');if(!clean)return '';
   const m=clean.match(/^([^:]{2,55}):\s*(.*)$/);
   return m?'<div class="requirement-row"><strong>'+esc(m[1].trim())+'</strong><span>'+esc(m[2].trim())+'</span></div>':'<p class="requirement-note">'+esc(clean)+'</p>';
