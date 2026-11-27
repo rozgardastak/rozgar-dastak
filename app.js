@@ -135,17 +135,22 @@ function renderJobs() {
 
 async function loadJobs() {
   try {
-    if (!window.supabase || typeof window.supabase.createClient !== 'function') {
-      throw new Error('Supabase client library did not load.');
+    const columns = 'id,title,organization,department,job_type,location,province,education,last_date,apply_link,description,is_active,created_at';
+    const endpoint = SUPABASE_URL + '/rest/v1/jobs?select=' + encodeURIComponent(columns) +
+      '&is_active=eq.true&order=created_at.desc&limit=1000';
+    const response = await fetch(endpoint, {
+      method: 'GET',
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: 'Bearer ' + SUPABASE_ANON_KEY
+      },
+      cache: 'no-store'
+    });
+    if (!response.ok) {
+      const detail = await response.text();
+      throw new Error('Supabase API ' + response.status + ': ' + detail.slice(0, 250));
     }
-    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data, error } = await client.from('jobs')
-      .select('id,title,organization,department,job_type,location,province,education,last_date,apply_link,description,is_active,created_at')
-      .eq('is_active', true)
-      .order('created_at', { ascending: false })
-      .limit(1000);
-
-    if (error) throw error;
+    const data = await response.json();
     allJobs = Array.isArray(data) ? data : [];
     renderJobs();
   } catch (error) {
