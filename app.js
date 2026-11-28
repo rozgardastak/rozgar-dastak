@@ -106,9 +106,9 @@ function renderJobs() {
     const qualification = String(job.education || 'See official advertisement');
     const department = String(job.department || job.organization || 'Recruiting department');
     const applyLink = String(job.apply_link || '').trim();
-    const isEmailApply = /^mailto:[^\\s]+$/i.test(applyLink);
+    const isEmailApply = /^mailto:[^\s]+$/i.test(applyLink);
     const isWebApply = /^https:\/\//i.test(applyLink);
-    const isPostal = /\\b(?:postal|courier|by hand|by post|send (?:your )?application)\\b/i.test(
+    const isPostal = /\b(?:postal|courier|by hand|by post|send (?:your )?application)\b/i.test(
       String(job.description || '')
     );
     const apply = isEmailApply
