@@ -102,10 +102,19 @@ function renderJobs() {
     const description = String(job.description || '').trim();
     const qualification = String(job.education || 'See official advertisement');
     const department = String(job.department || job.organization || 'Recruiting department');
-    const apply = job.apply_link && /^https:\/\//i.test(job.apply_link)
-      ? '<a class="apply-btn" href="' + escapeHTML(job.apply_link) +
-        '" target="_blank" rel="noopener noreferrer nofollow">Apply online <span>↗</span></a>'
-      : '<span class="apply-pending">Application link not available</span>';
+    const applyLink = String(job.apply_link || '').trim();
+    const isEmailApply = /^mailto:[^\\s]+$/i.test(applyLink);
+    const isWebApply = /^https:\/\//i.test(applyLink);
+    const isPostal = /\\b(?:postal|courier|by hand|by post|send (?:your )?application)\\b/i.test(
+      String(job.description || '')
+    );
+    const apply = isEmailApply
+      ? '<a class="apply-btn" href="' + escapeHTML(applyLink) + '">Apply by Email <span>↗</span></a>'
+      : isWebApply
+        ? '<a class="apply-btn" href="' + escapeHTML(applyLink) +
+          '" target="_blank" rel="noopener noreferrer nofollow">' +
+          (isPostal ? 'Application Instructions' : 'Apply online') + ' <span>↗</span></a>'
+        : '<span class="apply-pending">Application link not available</span>';
 
     return `<article class="job-card compact-job">
       <div class="job-main">
