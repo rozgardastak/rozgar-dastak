@@ -81,7 +81,7 @@ function renderJobs() {
     const locationText = [job.location, job.province].join(' ').toLowerCase();
     const provinceText = String(job.province || '').trim().toLowerCase();
     const allPakistan = /^(all pakistan|pakistan|nationwide|pan pakistan)$/.test(provinceText) ||
-      /\\b(all pakistan|pan pakistan|nationwide)\\b/i.test(String(job.location || ''));
+      /\b(all pakistan|pan pakistan|nationwide)\b/i.test(String(job.location || ''));
     const locationOK = !location || allPakistan || locationText.includes(location);
     const notExpired = !job.last_date ||
       new Date(job.last_date + 'T23:59:59') >= today;
